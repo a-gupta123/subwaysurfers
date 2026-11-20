@@ -3,7 +3,7 @@ import { useEffect, useRef, useState } from 'react';
 import { PanResponder, Pressable, StyleSheet, Text, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
-import { Lane, missReason, ObstacleKind, runSpeed, scoreForTime, spawnGap, moveLane } from '@/game/run';
+import { bodiesOverlap, Lane, missReason, ObstacleKind, runSpeed, scoreForTime, spawnGap, moveLane } from '@/game/run';
 import { loadHistory, recordRun } from '@/game/storage';
 
 type Obstacle = {
@@ -14,6 +14,7 @@ type Obstacle = {
 };
 
 const PLAYER_Y = 0.78;
+const SPRITE_BLOCK_PX = 58;
 
 export default function PlayScreen() {
   const focused = useIsFocused();
@@ -34,6 +35,7 @@ export default function PlayScreen() {
   const lastTsRef = useRef<number | null>(null);
   const idRef = useRef(0);
   const savingRef = useRef(false);
+  const trackHeightRef = useRef(0);
 
   useEffect(() => {
     phaseRef.current = phase;
@@ -112,27 +114,34 @@ export default function PlayScreen() {
         obstaclesRef.current = [...obstaclesRef.current, next];
       }
 
+      const trackHeight = trackHeightRef.current;
+      const drawnSpan = trackHeight > 0 ? Math.min(0.2, SPRITE_BLOCK_PX / trackHeight) : 0.12;
+      const spriteSpan = Math.max(0.06, drawnSpan);
       let hit: Obstacle | null = null;
       const moved: Obstacle[] = [];
       for (const obstacle of obstaclesRef.current) {
         const y = obstacle.y + speed * dt;
-        const crossedPlayer = obstacle.y < PLAYER_Y && y >= PLAYER_Y;
-        if (crossedPlayer && obstacle.lane === laneRef.current) {
-          hit = obstacle;
-          break;
+        if (y >= 1.08) {
+          continue;
         }
-        if (y < 1.08) {
-          moved.push({ ...obstacle, y });
+        const next = { ...obstacle, y };
+        moved.push(next);
+        if (
+          !hit &&
+          obstacle.lane === laneRef.current &&
+          bodiesOverlap(y, spriteSpan, PLAYER_Y, spriteSpan)
+        ) {
+          hit = next;
         }
       }
 
+      obstaclesRef.current = moved;
+      setObstacles(moved);
       if (hit) {
         finish(hit.kind, scoreForTime(elapsedRef.current));
         return;
       }
 
-      obstaclesRef.current = moved;
-      setObstacles(moved);
       setScore(scoreForTime(elapsedRef.current));
       frame = requestAnimationFrame(tick);
     };
@@ -180,7 +189,11 @@ export default function PlayScreen() {
 
       <View
         style={styles.track}
-        onLayout={(event) => setTrackHeight(event.nativeEvent.layout.height)}
+        onLayout={(event) => {
+          const height = event.nativeEvent.layout.height;
+          trackHeightRef.current = height;
+          setTrackHeight(height);
+        }}
         {...panResponder.panHandlers}>
         <View style={styles.lanes}>
           {[0, 1, 2].map((index) => (

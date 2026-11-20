@@ -22,6 +22,10 @@ export function scoreForTime(elapsedSeconds: number): number {
   return Math.floor(elapsedSeconds * 10);
 }
 
+export function bodiesOverlap(topA: number, heightA: number, topB: number, heightB: number): boolean {
+  return topA < topB + heightB && topB < topA + heightA;
+}
+
 const ROBOT_REASONS = [
   'A delivery robot boxed you in on the sidewalk.',
   'You lost a staring contest with a delivery robot.',

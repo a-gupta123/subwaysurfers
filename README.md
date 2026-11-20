@@ -48,6 +48,16 @@ To learn more about developing your project with Expo, look at the following res
 - [Expo documentation](https://docs.expo.dev/): Learn fundamentals, or go into advanced topics with our [guides](https://docs.expo.dev/guides).
 - [Learn Expo tutorial](https://docs.expo.dev/tutorial/introduction/): Follow a step-by-step tutorial where you'll create a project that runs on Android, iOS, and the web.
 
+## Review follow-up
+
+`REVIEW.md` is the acceptance-criteria review and is unchanged. It has no FAIL items. Warnings 4 and 8 are fixed: a hit is the player and an obstacle overlapping in the same lane, and that contact position stays on screen when the run ends. The in-app part of warning 9 is fixed too: score saves run one at a time, and Run History waits for an in-flight save, so two saves or a quick history open no longer drop a run.
+
+Two review notes are left alone.
+
+Warning 10: if the saved history is not valid JSON, the history screen shows an error and an empty list, and the bad value stays on disk. That only happens when the stored payload is already corrupt. Replacing it with an empty history would discard the only copy of data the app cannot read. Leaving the error in place keeps that failure visible.
+
+The rest of warning 9: a process killed while AsyncStorage is still writing can drop the last run. History waits until that write finishes, but the app cannot finish a write after the process is gone.
+
 ## Join the community
 
 Join our community of developers creating universal apps.

@@ -13,7 +13,8 @@ export type History = {
   runs: SavedRun[];
 };
 
-const EMPTY: History = { best: 0, runs: [] };
+let cached: History | null = null;
+let queue: Promise<void> = Promise.resolve();
 
 function isRun(value: unknown): value is SavedRun {
   if (!value || typeof value !== 'object') {
@@ -23,27 +24,55 @@ function isRun(value: unknown): value is SavedRun {
   return typeof run.score === 'number' && typeof run.endedAt === 'string' && typeof run.reason === 'string';
 }
 
-export async function loadHistory(): Promise<History> {
+function copyHistory(history: History): History {
+  return {
+    best: history.best,
+    runs: history.runs.map((run) => ({ ...run })),
+  };
+}
+
+function enqueue<T>(task: () => Promise<T>): Promise<T> {
+  const result = queue.then(task, task);
+  queue = result.then(
+    () => undefined,
+    () => undefined,
+  );
+  return result;
+}
+
+async function readHistory(): Promise<History> {
+  if (cached) {
+    return cached;
+  }
   const raw = await AsyncStorage.getItem(KEY);
   if (!raw) {
-    return EMPTY;
+    cached = { best: 0, runs: [] };
+    return cached;
   }
   const parsed = JSON.parse(raw) as Partial<History>;
   const runs = Array.isArray(parsed.runs) ? parsed.runs.filter(isRun) : [];
   const bestFromRuns = runs.reduce((highest, run) => Math.max(highest, run.score), 0);
   const best = typeof parsed.best === 'number' ? Math.max(parsed.best, bestFromRuns) : bestFromRuns;
-  return { best, runs };
+  cached = { best, runs };
+  return cached;
 }
 
-export async function recordRun(run: SavedRun): Promise<History> {
-  const current = await loadHistory();
-  const runs = [run, ...current.runs].slice(0, 30);
-  const next: History = {
-    best: Math.max(current.best, run.score),
-    runs,
-  };
-  await AsyncStorage.setItem(KEY, JSON.stringify(next));
-  return next;
+export function loadHistory(): Promise<History> {
+  return enqueue(async () => copyHistory(await readHistory()));
+}
+
+export function recordRun(run: SavedRun): Promise<History> {
+  return enqueue(async () => {
+    const current = await readHistory();
+    const runs = [run, ...current.runs].slice(0, 30);
+    const next: History = {
+      best: Math.max(current.best, run.score),
+      runs,
+    };
+    await AsyncStorage.setItem(KEY, JSON.stringify(next));
+    cached = next;
+    return copyHistory(next);
+  });
 }
 
 export function latestRuns(history: History): SavedRun[] {
