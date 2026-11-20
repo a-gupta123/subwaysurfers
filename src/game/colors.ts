@@ -1,0 +1,16 @@
+export const campus = {
+  ink: '#1B1A17',
+  card: '#2A2622',
+  button: '#3A3128',
+  buttonPressed: '#4A3F34',
+  track: '#3F4A3A',
+  lane: '#31402F',
+  laneMiddle: '#3A4A36',
+  laneLine: 'rgba(246, 231, 193, 0.45)',
+  cream: '#F6E7C1',
+  gold: '#F2C14E',
+  cardinal: '#C41230',
+  cardinalPressed: '#9B0E26',
+  white: '#FFFFFF',
+  danger: '#FFD0C8',
+} as const;

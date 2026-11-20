@@ -3,6 +3,7 @@ import { useEffect, useRef, useState } from 'react';
 import { PanResponder, Pressable, StyleSheet, Text, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
+import { campus } from '@/game/colors';
 import { bodiesOverlap, Lane, missReason, ObstacleKind, runSpeed, scoreForTime, spawnGap, moveLane } from '@/game/run';
 import { loadHistory, recordRun } from '@/game/storage';
 
@@ -181,7 +182,11 @@ export default function PlayScreen() {
         </View>
         <View style={styles.headerSide}>
           <Text style={styles.best}>Best {best}</Text>
-          <Pressable accessibilityRole="button" onPress={() => router.push('/history' as Href)} style={styles.historyButton}>
+          <Pressable
+            accessibilityRole="button"
+            accessibilityLabel="Run History"
+            onPress={() => router.push('/history' as Href)}
+            style={({ pressed }) => [styles.historyButton, pressed && styles.historyButtonPressed]}>
             <Text style={styles.historyLabel}>Run History</Text>
           </Pressable>
         </View>
@@ -234,7 +239,11 @@ export default function PlayScreen() {
 
       <View style={styles.footer}>
         {phase === 'ready' && (
-          <Pressable accessibilityRole="button" onPress={beginRun} style={styles.primaryButton}>
+          <Pressable
+            accessibilityRole="button"
+            accessibilityLabel="Start"
+            onPress={beginRun}
+            style={({ pressed }) => [styles.primaryButton, pressed && styles.primaryButtonPressed]}>
             <Text style={styles.primaryLabel}>Start</Text>
           </Pressable>
         )}
@@ -245,7 +254,11 @@ export default function PlayScreen() {
             <Text style={styles.overScore}>Score {score}</Text>
             <Text style={styles.overReason}>{reason}</Text>
             {saveError ? <Text style={styles.saveError}>{saveError}</Text> : null}
-            <Pressable accessibilityRole="button" onPress={beginRun} style={styles.primaryButton}>
+            <Pressable
+              accessibilityRole="button"
+              accessibilityLabel="Play Again"
+              onPress={beginRun}
+              style={({ pressed }) => [styles.primaryButton, pressed && styles.primaryButtonPressed]}>
               <Text style={styles.primaryLabel}>Play Again</Text>
             </Pressable>
           </View>
@@ -258,7 +271,7 @@ export default function PlayScreen() {
 const styles = StyleSheet.create({
   screen: {
     flex: 1,
-    backgroundColor: '#1B1A17',
+    backgroundColor: campus.ink,
   },
   header: {
     flexDirection: 'row',
@@ -268,15 +281,15 @@ const styles = StyleSheet.create({
     paddingTop: 8,
   },
   kicker: {
-    color: '#D9CBB2',
-    fontSize: 14,
+    color: campus.cream,
+    fontSize: 15,
     fontWeight: '700',
     textTransform: 'uppercase',
     letterSpacing: 0.6,
   },
   score: {
-    color: '#F6E7C1',
-    fontSize: 40,
+    color: campus.gold,
+    fontSize: 44,
     fontWeight: '800',
   },
   headerSide: {
@@ -284,27 +297,34 @@ const styles = StyleSheet.create({
     gap: 8,
   },
   best: {
-    color: '#F2C14E',
-    fontSize: 14,
+    color: campus.cream,
+    fontSize: 16,
     fontWeight: '700',
   },
   historyButton: {
-    backgroundColor: '#3A3128',
+    minHeight: 44,
+    justifyContent: 'center',
+    backgroundColor: campus.button,
+    borderWidth: 2,
+    borderColor: campus.gold,
     borderRadius: 999,
-    paddingHorizontal: 12,
-    paddingVertical: 8,
+    paddingHorizontal: 16,
+    paddingVertical: 10,
+  },
+  historyButtonPressed: {
+    backgroundColor: campus.buttonPressed,
   },
   historyLabel: {
-    color: '#F6E7C1',
-    fontSize: 14,
-    fontWeight: '700',
+    color: campus.cream,
+    fontSize: 16,
+    fontWeight: '800',
   },
   track: {
     flex: 1,
     margin: 20,
     borderRadius: 24,
     overflow: 'hidden',
-    backgroundColor: '#3F4A3A',
+    backgroundColor: campus.track,
   },
   lanes: {
     position: 'absolute',
@@ -317,11 +337,11 @@ const styles = StyleSheet.create({
   lane: {
     flex: 1,
     borderRightWidth: 2,
-    borderRightColor: 'rgba(246, 231, 193, 0.25)',
-    backgroundColor: '#31402F',
+    borderRightColor: campus.laneLine,
+    backgroundColor: campus.lane,
   },
   middleLane: {
-    backgroundColor: '#3A4A36',
+    backgroundColor: campus.laneMiddle,
   },
   obstacle: {
     position: 'absolute',
@@ -332,9 +352,14 @@ const styles = StyleSheet.create({
     fontSize: 34,
   },
   obstacleName: {
-    color: '#F6E7C1',
-    fontSize: 12,
-    fontWeight: '700',
+    color: campus.ink,
+    backgroundColor: campus.cream,
+    overflow: 'hidden',
+    borderRadius: 999,
+    paddingHorizontal: 8,
+    paddingVertical: 2,
+    fontSize: 14,
+    fontWeight: '800',
   },
   player: {
     position: 'absolute',
@@ -345,12 +370,13 @@ const styles = StyleSheet.create({
     fontSize: 36,
   },
   playerName: {
-    color: '#1B1A17',
-    backgroundColor: '#F2C14E',
+    color: campus.ink,
+    backgroundColor: campus.gold,
     overflow: 'hidden',
     borderRadius: 999,
     paddingHorizontal: 8,
-    fontSize: 12,
+    paddingVertical: 2,
+    fontSize: 14,
     fontWeight: '800',
   },
   readyCard: {
@@ -358,20 +384,22 @@ const styles = StyleSheet.create({
     left: 16,
     right: 16,
     top: '28%',
-    backgroundColor: 'rgba(27, 26, 23, 0.92)',
+    backgroundColor: 'rgba(27, 26, 23, 0.94)',
     borderRadius: 18,
+    borderWidth: 2,
+    borderColor: campus.gold,
     padding: 18,
     gap: 8,
   },
   readyTitle: {
-    color: '#F2C14E',
-    fontSize: 24,
+    color: campus.gold,
+    fontSize: 26,
     fontWeight: '800',
   },
   readyCopy: {
-    color: '#F6E7C1',
-    fontSize: 16,
-    lineHeight: 22,
+    color: campus.cream,
+    fontSize: 17,
+    lineHeight: 24,
   },
   footer: {
     minHeight: 132,
@@ -380,44 +408,53 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
   },
   hint: {
-    color: '#D9CBB2',
+    color: campus.cream,
     textAlign: 'center',
-    fontSize: 16,
+    fontSize: 17,
+    lineHeight: 24,
   },
   primaryButton: {
-    backgroundColor: '#C41230',
+    minHeight: 56,
+    justifyContent: 'center',
+    backgroundColor: campus.cardinal,
     borderRadius: 16,
     paddingVertical: 16,
     alignItems: 'center',
   },
+  primaryButtonPressed: {
+    backgroundColor: campus.cardinalPressed,
+  },
   primaryLabel: {
-    color: '#FFFFFF',
+    color: campus.white,
     fontSize: 20,
     fontWeight: '800',
   },
   overCard: {
-    backgroundColor: '#2A2622',
+    backgroundColor: campus.card,
     borderRadius: 18,
+    borderWidth: 2,
+    borderColor: campus.gold,
     padding: 16,
     gap: 8,
   },
   overTitle: {
-    color: '#F6E7C1',
+    color: campus.cream,
     fontSize: 22,
     fontWeight: '800',
   },
   overScore: {
-    color: '#F2C14E',
-    fontSize: 18,
-    fontWeight: '700',
+    color: campus.gold,
+    fontSize: 20,
+    fontWeight: '800',
   },
   overReason: {
-    color: '#F6E7C1',
-    fontSize: 16,
-    lineHeight: 22,
+    color: campus.cream,
+    fontSize: 17,
+    lineHeight: 24,
   },
   saveError: {
-    color: '#F2C14E',
-    fontSize: 14,
+    color: campus.danger,
+    fontSize: 16,
+    lineHeight: 22,
   },
 });

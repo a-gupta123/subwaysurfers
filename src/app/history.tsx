@@ -3,6 +3,7 @@ import { useCallback, useState } from 'react';
 import { ActivityIndicator, Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
+import { campus } from '@/game/colors';
 import { History, latestRuns, loadHistory, SavedRun } from '@/game/storage';
 
 function formatWhen(iso: string): string {
@@ -49,14 +50,18 @@ export default function HistoryScreen() {
   return (
     <SafeAreaView style={styles.screen}>
       <View style={styles.header}>
-        <Pressable accessibilityRole="button" onPress={() => router.back()} style={styles.back}>
+        <Pressable
+          accessibilityRole="button"
+          accessibilityLabel="Back"
+          onPress={() => router.back()}
+          style={({ pressed }) => [styles.back, pressed && styles.backPressed]}>
           <Text style={styles.backLabel}>Back</Text>
         </Pressable>
         <Text style={styles.title}>Run History</Text>
       </View>
 
       {history === null ? (
-        <ActivityIndicator color="#F2C14E" style={styles.loader} />
+        <ActivityIndicator color={campus.gold} style={styles.loader} />
       ) : (
         <ScrollView contentContainerStyle={styles.content}>
           <View style={styles.bestCard}>
@@ -88,7 +93,7 @@ export default function HistoryScreen() {
 const styles = StyleSheet.create({
   screen: {
     flex: 1,
-    backgroundColor: '#1B1A17',
+    backgroundColor: campus.ink,
   },
   header: {
     paddingHorizontal: 20,
@@ -98,18 +103,25 @@ const styles = StyleSheet.create({
   },
   back: {
     alignSelf: 'flex-start',
-    paddingVertical: 8,
-    paddingHorizontal: 12,
+    minHeight: 44,
+    justifyContent: 'center',
+    paddingVertical: 10,
+    paddingHorizontal: 16,
     borderRadius: 999,
-    backgroundColor: '#3A3128',
+    borderWidth: 2,
+    borderColor: campus.gold,
+    backgroundColor: campus.button,
+  },
+  backPressed: {
+    backgroundColor: campus.buttonPressed,
   },
   backLabel: {
-    color: '#F6E7C1',
-    fontSize: 16,
-    fontWeight: '700',
+    color: campus.cream,
+    fontSize: 17,
+    fontWeight: '800',
   },
   title: {
-    color: '#F6E7C1',
+    color: campus.cream,
     fontSize: 32,
     fontWeight: '800',
   },
@@ -122,54 +134,60 @@ const styles = StyleSheet.create({
     gap: 12,
   },
   bestCard: {
-    backgroundColor: '#C41230',
+    backgroundColor: campus.cardinal,
     borderRadius: 18,
     padding: 20,
   },
   bestLabel: {
-    color: '#F6E7C1',
-    fontSize: 14,
+    color: campus.white,
+    fontSize: 15,
     fontWeight: '700',
     textTransform: 'uppercase',
     letterSpacing: 0.6,
   },
   bestScore: {
-    color: '#FFFFFF',
+    color: campus.white,
     fontSize: 48,
     fontWeight: '800',
   },
   error: {
-    color: '#F2C14E',
-    fontSize: 15,
+    color: campus.danger,
+    fontSize: 17,
+    lineHeight: 24,
   },
   empty: {
-    color: '#D9CBB2',
-    fontSize: 16,
-    lineHeight: 22,
+    color: campus.cream,
+    fontSize: 17,
+    lineHeight: 24,
   },
   runCard: {
-    backgroundColor: '#2A2622',
+    backgroundColor: campus.card,
     borderRadius: 16,
+    borderWidth: 2,
+    borderColor: campus.gold,
     padding: 16,
-    gap: 6,
+    gap: 8,
   },
   runTop: {
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'baseline',
+    gap: 12,
   },
   runScore: {
-    color: '#F2C14E',
+    color: campus.gold,
     fontSize: 28,
     fontWeight: '800',
   },
   runWhen: {
-    color: '#D9CBB2',
-    fontSize: 14,
+    color: campus.cream,
+    fontSize: 16,
+    flexShrink: 1,
+    textAlign: 'right',
   },
   runReason: {
-    color: '#F6E7C1',
-    fontSize: 16,
-    lineHeight: 22,
+    color: campus.cream,
+    fontSize: 17,
+    lineHeight: 24,
   },
 });

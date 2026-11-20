@@ -3,6 +3,8 @@ import * as SplashScreen from 'expo-splash-screen';
 import { useEffect } from 'react';
 import { StatusBar } from 'expo-status-bar';
 
+import { campus } from '@/game/colors';
+
 SplashScreen.preventAutoHideAsync().catch(() => {});
 
 export default function RootLayout() {
@@ -16,7 +18,8 @@ export default function RootLayout() {
       <Stack
         screenOptions={{
           headerShown: false,
-          contentStyle: { backgroundColor: '#1B1A17' },
+          gestureEnabled: false,
+          contentStyle: { backgroundColor: campus.ink },
         }}>
         <Stack.Screen name="index" />
         <Stack.Screen name="history" />
