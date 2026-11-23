@@ -1,66 +1,36 @@
-# Welcome to your Expo app 👋
+# Late to Class
 
-This is an [Expo](https://expo.dev) project created with [`create-expo-app`](https://www.npmjs.com/package/create-expo-app).
+Late to Class is a mobile game where you run across CMU and dodge delivery robots and tour groups. I wanted to make a game like Subway Surfers but set it on a campus I actually know.
 
-## Get started
+## Screens
 
-1. Install dependencies
+### Play
 
-   ```bash
-   npm install
-   ```
+Tap Start and swipe left or right to switch lanes. Your score goes up the longer you last, and the obstacles get faster. When you hit something, you see your final score and why you missed class. Tap Play Again to start a new run.
 
-2. Start the app
+### Run History
 
-   ```bash
-   npx expo start
-   ```
+This screen shows your best score and your last five runs, newest first. Your scores are still there when you close and reopen the app.
 
-In the output, you'll find options to open the app in a
+## How to run it
 
-- [development build](https://docs.expo.dev/develop/development-builds/introduction/)
-- [Android emulator](https://docs.expo.dev/workflow/android-studio-emulator/)
-- [iOS simulator](https://docs.expo.dev/workflow/ios-simulator/)
-- [Expo Go](https://expo.dev/go), a limited sandbox for trying out app development with Expo
+I tested this on my iPhone with Expo Go. The project uses Expo SDK 58.
 
-You can start developing by editing the files inside the **src/app** directory. This project uses [file-based routing](https://docs.expo.dev/router/introduction).
+Run these commands from the project folder.
 
-## Get a fresh project
-
-When you're ready, run:
-
-```bash
-npm run reset-project
+```sh
+npm install
+npx expo start
 ```
 
-This command will move the starter code to the **example** directory and create a blank **src/app** directory where you can start developing.
+Scan the QR code with your iPhone camera to open the game in Expo Go. If you get a network error, stop the server, run `npx expo start --tunnel`, and scan the new code. This is what worked on my phone.
 
-### Other setup steps
+## What I changed after the review
 
-- To set up ESLint for linting, run `npx expo lint`, or follow our guide on ["Using ESLint and Prettier"](https://docs.expo.dev/guides/using-eslint/)
-- If you'd like to set up unit testing, follow our guide on ["Unit Testing with Jest"](https://docs.expo.dev/develop/unit-testing/)
-- Learn more about the TypeScript setup in this template in our guide on ["Using TypeScript"](https://docs.expo.dev/guides/typescript/)
+I fixed collisions so the run ends as soon as you hit an obstacle and the screen freezes where it happened. I also made Run History wait for the latest score to finish saving.
 
-## Learn more
+If the app can't read the saved history, it shows an error and keeps the original data. I left it this way because resetting the history would erase the old scores. If you close Expo Go while a score is still saving, that last score can be lost.
 
-To learn more about developing your project with Expo, look at the following resources:
+## What surprised me
 
-- [Expo documentation](https://docs.expo.dev/): Learn fundamentals, or go into advanced topics with our [guides](https://docs.expo.dev/guides).
-- [Learn Expo tutorial](https://docs.expo.dev/tutorial/introduction/): Follow a step-by-step tutorial where you'll create a project that runs on Android, iOS, and the web.
-
-## Review follow-up
-
-`REVIEW.md` is the acceptance-criteria review and is unchanged. It has no FAIL items. Warnings 4 and 8 are fixed: a hit is the player and an obstacle overlapping in the same lane, and that contact position stays on screen when the run ends. The in-app part of warning 9 is fixed too: score saves run one at a time, and Run History waits for an in-flight save, so two saves or a quick history open no longer drop a run.
-
-Two review notes are left alone.
-
-Warning 10: if the saved history is not valid JSON, the history screen shows an error and an empty list, and the bad value stays on disk. That only happens when the stored payload is already corrupt. Replacing it with an empty history would discard the only copy of data the app cannot read. Leaving the error in place keeps that failure visible.
-
-The rest of warning 9: a process killed while AsyncStorage is still writing can drop the last run. History waits until that write finishes, but the app cannot finish a write after the process is gone.
-
-## Join the community
-
-Join our community of developers creating universal apps.
-
-- [Expo on GitHub](https://github.com/expo/expo): View our open source platform and contribute.
-- [Discord community](https://chat.expo.dev): Chat with Expo users and ask questions.
+I was surprised that I could change one line on my Mac and see it update on my iPhone without reinstalling the app.
